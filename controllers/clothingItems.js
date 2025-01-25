@@ -4,8 +4,8 @@ const { SUCCESS, BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/erro
 
 const getItems = (req, res) => {
   ClothingItem.find({})
-    .then((items) => res.status(SUCCESS).send(items))
-    .catch((err) => res.status(SERVER_ERROR).send({ message: err.message }));
+    .then((items) => res.status(SUCCESS).json(items))
+    .catch((err) => res.status(SERVER_ERROR).json({ message: err.message }));
 };
 
 const createItem = (req, res) => {
@@ -13,13 +13,12 @@ const createItem = (req, res) => {
   const owner = req.user._id;
 
   ClothingItem.create({ name, weather, imageURL, owner, likes })
-    .then((item) => res.status(SUCCESS).send(item))
+    .then((item) => res.status(SUCCESS).json(item))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
-      } else {
-      return res.status(SERVER_ERROR).send({ message: err.message });
+      if (err.name === 'ValidationError') {
+        return res.status(BAD_REQUEST).json({ message: err.message });
       }
+      return res.status(SERVER_ERROR).json({ message: err.message });
     });
 };
 
@@ -28,34 +27,31 @@ const updateItem = (req, res) => {
   const { imageURL } = req.body;
   ClothingItem.findByIdAndUpdate(itemId, { $set: { imageURL } })
     .orFail()
-    .then((item) => res.status(SUCCESS).send(item))
+    .then((item) => res.status(SUCCESS).json(item))
     .catch((err) => {
       if (err.name === "ItemNotUpdatedError") {
-        return res.status(NOT_FOUND).send({ message: err.message });
+        return res.status(NOT_FOUND).json({ message: err.message });
       }
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
-      } else {
-      return res.status(SERVER_ERROR).send({ message: err.message });
+        return res.status(BAD_REQUEST).json({ message: err.message });
       }
+      return res.status(SERVER_ERROR).json({ message: err.message });
     });
 };
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  const { imageURL } = req.body;
-  ClothingItem.findByIdAndDelete(itemId, { $set: { imageURL } })
+  ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) => res.status(SUCCESS).send(item))
+    .then((item) => res.status(SUCCESS).json(item))
     .catch((err) => {
-      if (err.name === "ItemNotDeletedError") {
-        return res.status(NOT_FOUND).send({ message: err.message });
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).json({ message: err.message });
       }
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
-      } else {
-      return res.status(SERVER_ERROR).send({ message: err.message });
+        return res.status(BAD_REQUEST).json({ message: err.message });
       }
+      return res.status(SERVER_ERROR).json({ message: err.message });
     });
 };
 
@@ -67,22 +63,21 @@ const likeItem = (req, res) => {
     { new: true }
   )
     .orFail()
-    .then((item) => res.status(SUCCESS).send(item))
-    .catch((e) => {
-      if (e.name === "CastError") {
+    .then((item) => res.status(SUCCESS).json(item))
+    .catch((err) => {
+      if (err.name === "CastError") {
         return res
           .status(BAD_REQUEST)
-          .send({ message: "Error form like items, Bad request." });
+          .json({ message: "Error form like items, Bad request." });
       }
-      if (e.name === "DocumentNotFoundError") {
+      if (err.name === "DocumentNotFoundError") {
         return res
           .status(NOT_FOUND)
-          .send({ message: "Error form like items, Page Not Found!." });
-      } else {
+          .json({ message: "Error form like items, Page Not Found!." });
+      }
       return res
         .status(SERVER_ERROR)
-        .send({ message: "Error from like Items" });
-      }
+        .json({ message: "Error from like Items" });
     });
 };
 
@@ -95,22 +90,21 @@ const unlikeItem = (req, res) => {
     { new: true }
   )
     .orFail()
-    .then((item) => res.status(SUCCESS).send(item))
-    .catch((e) => {
-      if (e.name === "CastError") {
+    .then((item) => res.status(SUCCESS).json(item))
+    .catch((err) => {
+      if (err.name === "CastError") {
         return res
           .status(BAD_REQUEST)
-          .send({ message: "Error form unlike items, Bad request." });
+          .json({ message: "Error form unlike items, Bad request." });
       }
-      if (e.name === "DocumentNotFoundError") {
+      if (err.name === "DocumentNotFoundError") {
         return res
           .status(NOT_FOUND)
-          .send({ message: "Error form unlike items, Page Not Found!." });
-      } else {
+          .json({ message: "Error form unlike items, Page Not Found!." });
+      } 
       return res
         .status(SERVER_ERROR)
-        .send({ message: "Error from unlike Items" });
-      }
+        .json({ message: "Error from unlike Items" });
     });
 };
 
@@ -120,5 +114,5 @@ module.exports = {
   updateItem,
   deleteItem,
   unlikeItem,
-  likeItem,
+  likeItem
 };
