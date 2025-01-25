@@ -17,8 +17,9 @@ const createItem = (req, res) => {
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res.status(BAD_REQUEST).send({ message: err.message });
-      }
+      } else {
       return res.status(SERVER_ERROR).send({ message: err.message });
+      }
     });
 };
 
@@ -34,8 +35,9 @@ const updateItem = (req, res) => {
       }
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: err.message });
-      }
+      } else {
       return res.status(SERVER_ERROR).send({ message: err.message });
+      }
     });
 };
 
@@ -51,8 +53,9 @@ const deleteItem = (req, res) => {
       }
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: err.message });
-      }
+      } else {
       return res.status(SERVER_ERROR).send({ message: err.message });
+      }
     });
 };
 
@@ -75,10 +78,11 @@ const likeItem = (req, res) => {
         return res
           .status(NOT_FOUND)
           .send({ message: "Error form like items, Page Not Found!." });
-      }
+      } else {
       return res
         .status(SERVER_ERROR)
         .send({ message: "Error from like Items" });
+      }
     });
 };
 
@@ -102,10 +106,11 @@ const unlikeItem = (req, res) => {
         return res
           .status(NOT_FOUND)
           .send({ message: "Error form unlike items, Page Not Found!." });
-      }
+      } else {
       return res
         .status(SERVER_ERROR)
         .send({ message: "Error from unlike Items" });
+      }
     });
 };
 

@@ -15,8 +15,9 @@ const { SUCCESS, BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/erro
       .catch((err) => {
         if (err.name === 'ValidationError') {
           return res.status(BAD_REQUEST).send({ message: err.message });
-        }
+        } else {
         return res.status(SERVER_ERROR).send({ message: err.message });
+        }
       });
   };
   
@@ -31,8 +32,9 @@ const { SUCCESS, BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/erro
         }
         if (err.name === 'CastError') {
           return res.status(BAD_REQUEST).send({ message: err.message });
-        }
+        } else {
         return res.status(SERVER_ERROR).send({ message: err.message });
+        }
       });
   };
   
