@@ -4,7 +4,7 @@ const handleError = require("../utils/errorHandler");
 
 
 const createItem = (req, res) => {
-  const { name, weather, imageUrl} = req.body;
+  const { name, weather, imageUrl, likes} = req.body;
   const owner = req.user?._id;
   if (!owner) {
     console.error("Missing owner in request");
@@ -30,37 +30,6 @@ const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send({ data: items }))
     .catch((err) => handleError(err, res));
-};
-
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageURL } = req.body;
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageURL } })
-  .orFail(() => {
-    const error = new Error("DocumentNotFoundError");
-    error.name = "DocumentNotFoundError";
-    throw error;
-  })
-  .then((item) => res.status(200).send({ data: item }))
-  .catch((err) => {
-    console.error("Error liking item:", err);
-
-    if (err.name === "DocumentNotFoundError") {
-      return res
-        .status(ERROR_CODES.NOT_FOUND)
-        .send({ message: ERROR_MESSAGES.NOT_FOUND });
-    }
-
-    if (err.name === "CastError") {
-      return res
-        .status(ERROR_CODES.BAD_REQUEST)
-        .send({ message: ERROR_MESSAGES.INVALID_ID });
-    }
-
-    return res
-      .status(ERROR_CODES.SERVER_ERROR)
-      .send({ message: ERROR_MESSAGES.SERVER_ERROR });
-  });
 };
 
 
@@ -176,6 +145,5 @@ module.exports = {
   getItems,
   deleteItem,
   likeItem,
-  unlikeItem,
-  updateItem
+  unlikeItem
 };
