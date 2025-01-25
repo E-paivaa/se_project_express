@@ -1,0 +1,68 @@
+run-name: "Tests Project 13: ${{ github.event.head_commit.message }}"
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "**"
+
+jobs:
+  read_sprint_file:
+    runs-on: ubuntu-latest
+    outputs:
+      sprint: ${{ steps.sprint.outputs.SPRINT_NUMBER }}
+    steps:
+      - name: Set up GitHub Actions
+        uses: actions/checkout@v4
+      - name: Check if sprint file exist
+        run: bash .github/bin/check-sprint.sh
+      - name: Get sprint number
+        id: sprint
+        run: echo "SPRINT_NUMBER=$(cat sprint.txt)" >> $GITHUB_OUTPUT
+      - name: Print sprint number
+        run: echo "${{ steps.sprint.outputs.SPRINT_NUMBER }}"
+
+  test_config:
+    runs-on: ubuntu-latest
+    needs: read_sprint_file
+    if: ${{ needs.read_sprint_file.outputs.sprint == '13' }}
+    steps:
+      - name: Set up GitHub Actions
+        uses: actions/checkout@v4
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Get testing lib
+        run: set -eu && git clone --depth 1 https://github.com/practicum-com/tests-13-public.git
+      - name: Installing Dependencies
+        run: npm i
+      - name: Run test config
+        run: cd tests-13-public && bash ./bin/test-config.sh
+
+  test_endpoints:
+    runs-on: ubuntu-latest
+    needs: read_sprint_file
+    if: ${{ needs.read_sprint_file.outputs.sprint == '13' }}
+    steps:
+      - name: Set up GitHub Actions
+        uses: actions/checkout@v4
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.6.0
+        with:
+          mongodb-version: "4.4"
+      - name: Get testing lib
+        run: set -eu && git clone --depth 1 https://github.com/practicum-com/tests-13-public.git
+      - name: Installing Dependencies
+        run: npm i
+      - name: Installing wait-port
+        run: npm install -g wait-port
+      - name: Run server
+        run: npm run start & wait-port -t 30000 localhost:3001
+      - name: Run test endpoints
+        run: cd tests-13-public && bash ./bin/test-endpoints.sh
