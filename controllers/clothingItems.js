@@ -1,6 +1,6 @@
 const ClothingItem = require("../models/clothingItem");
-const { SUCCESS, BAD_REQUEST, NOT_FOUND, SERVER_ERROR } =
-  require("../utils/errors").default;
+const { SUCCESS, BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../utils/errors');
+
 
 const getItems = (req, res) => {
   ClothingItem.find({})
