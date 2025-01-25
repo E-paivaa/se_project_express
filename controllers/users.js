@@ -22,10 +22,10 @@ User.create({ name, avatar })
 };
 
 const getUser = (req, res) => {
-  const { userId } = req.params;
-  User.find(userId)
+  const { _id: userId } = req.user;
+  User.findById(userId)
     .orFail()
-    .then((user) => res.status(SUCCESS).send(user))
+    .then((user) => res.status(SUCCESS).send({_id: user, name: user.name, avatar: user.avatar}))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         return res.status(NOT_FOUND).send({ message: err.message });

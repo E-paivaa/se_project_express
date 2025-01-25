@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const mainRouter = require("./routes/index");
+
 const app = express();
 const { PORT = 3001 } = process.env;
 
@@ -17,12 +18,12 @@ app.use(express.json());
 
 app.use("/", mainRouter);
 
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: "67251b4383aac86858c8db57",
-//   };
-//   next();
-// });
+app.use((req, res, next) => {
+  req.user = {
+    _id: "6794332335db7c144554e5f4",
+  };
+  next();
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

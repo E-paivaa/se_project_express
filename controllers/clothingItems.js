@@ -26,7 +26,7 @@ const updateItem = (req, res) => {
   const { imageURL } = req.body;
   ClothingItem.findByIdAndUpdate(itemId, { $set: {imageURL}})
     .orFail()
-    .then((item) => res.status(SUCCESS).send({data:item}))
+    .then((item) => res.status(SUCCESS).send(item))
     .catch((err) => {
       if (err.name === 'ItemNotUpdatedError') {
         return res.status(NOT_FOUND).send({ message: err.message });
@@ -42,7 +42,7 @@ const deleteItem = (req, res) => {
   const { imageURL } = req.body;
   ClothingItem.findByIdAndDelete(itemId, { $set: {imageURL}})
     .orFail()
-    .then((item) => res.status(SUCCESS).send({data:item}))
+    .then((item) => res.status(SUCCESS).send(item))
     .catch((err) => {
       if (err.name === 'ItemNotDeletedError') {
         return res.status(NOT_FOUND).send({ message: err.message });
