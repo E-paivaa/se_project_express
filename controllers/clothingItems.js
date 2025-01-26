@@ -4,7 +4,7 @@ const handleError = require("../utils/errorHandler");
 
 
 const createItem = (req, res) => {
-  const { name, weather, imageUrl, likes} = req.body;
+  const { name, weather, imageUrl} = req.body;
   const owner = req.user?._id;
   if (!owner) {
     console.error("Missing owner in request");

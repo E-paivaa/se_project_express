@@ -11,8 +11,7 @@ const clothingItemSchema = mongoose.Schema({
     weather: {
         type: String,
         required: [true, 'Weather Input Required'],
-        minlength: 2,
-        maxlength: 30,
+        enum: ["hot", "warm", "cold"],
       },
     imageUrl: {
       type: String,
