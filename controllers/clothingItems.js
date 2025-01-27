@@ -17,7 +17,7 @@ const createItem = (req, res) => {
       .status(ERROR_CODES.BAD_REQUEST)
       .send({ message: ERROR_MESSAGES.MISSING_FIELDS });
   }
-  return ClothingItem.create({ name, weather, imageUrl, owner, likes })
+  return ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => {
       console.info("Item created successfully:", item);
       return res.status(201).send({ data: item });
