@@ -46,8 +46,8 @@ const deleteItem = async (req, res) => {
 
     if (item.owner.toString() !== userId) {
       return res
-        .status(ERROR_CODES.BAD_CARD_REMOVAL)
-        .send({ message: ERROR_MESSAGES.CARD_REMOVAL });
+        .status(ERROR_CODES.FORBIDDEN)
+        .send({ message: ERROR_MESSAGES.CARD_REMOVAL});
     }
 
     await item.deleteOne();
@@ -56,7 +56,7 @@ const deleteItem = async (req, res) => {
     if (err.name === "CastError") {
       return res
         .status(ERROR_CODES.BAD_REQUEST)
-        .send({ message: ERROR_MESSAGES.INVALID_ID });
+        .send({ message: ERROR_MESSAGES.BAD_REQUEST });
     }
 
     if (err.name === "DocumentNotFoundError") {
