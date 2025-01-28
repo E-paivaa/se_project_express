@@ -4,7 +4,6 @@ module.exports = {
     node: true,
   },
   
-  // Add the necessary extensions.
   extends: ["eslint:recommended", "airbnb-base", "prettier"],
   overrides: [
     {
@@ -22,6 +21,8 @@ module.exports = {
     sourceType: "module",
   },
   rules: {
+    "no-unused-vars": ["error", { argsIgnorePattern: "next" }],
+    "no-console": ["warn", { allow: ["error"] }],
     "no-underscore-dangle":["error", {"allow": ["_", "_id"]}]
   },
 };

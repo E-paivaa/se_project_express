@@ -49,7 +49,11 @@ const createUser = async (req, res) => {
 };
 
 const login = (req, res) => {
+
   const { email, password } = req.body;
+  if (!email || !password) { 
+    return res.status(ERROR_CODES.BAD_REQUEST).send({message:ERROR_MESSAGES.BAD_REQUEST});
+   }
 
   return User.findUserByCredentials(email, password)
   .then((u) => {
@@ -68,7 +72,7 @@ const login = (req, res) => {
 
 // Current User
 const getCurrentUser = (req, res) => {
-  const { userId } = req.user._id;
+  const userId  = req.user._id;
 
   User.findById(userId)
     .orFail(() => {
