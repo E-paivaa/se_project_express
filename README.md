@@ -1,4 +1,14 @@
-# WTWR (What to Wear?): Back End
+# WTWR (What to Wear?): Summary
+
+    This project illustrates the use of weather and clothing functionality that portrays the deployment of clothing based of the weather within the location. Along with the add ons of sign in, sign up, add clothing, and profile function.
+
+
+# Front End : Express.js Framework
+
+    The front end project is used to simplify 
+    functionality of our APIs and WEB APPLICATIONS.
+
+# Back End : Project Stature
 
     The back-end project is focused on creating a server for the WTWR application. You’ll gain a deeper understanding of how to work with databases, set up security and testing, and deploy web applications on a remote machine. The eventual goal is to create a server with an API and user authorization.
 
@@ -10,8 +20,23 @@
 
     Importing and Installing files like Mongoose, ESLint, Nodemon, Express, and Modules on our project it allowed the project to:
 
-- **Node.js**: Runtime environment for building server-side applications.
-- **Express.js**: Web framework for building robust APIs.
-- **MongoDB**: Database for storing user data and preferences.
+- **Node.js**: 
+    
+    Runtime environment for building server-side 
+    applications.
+
+- **Express.js**: 
+    
+    Web framework for building robust APIs.
+
+- **MongoDB**: 
+    
+    Database for storing user data and preferences.
+
+# DOMAIN NAME:
+
+    - https://api.gcp-demo.twilightparadox.com
+    - https://gcp-demo.twilightparadox.com (homepage)
+    - https://www.gcp-demo.twilightparadox.com
 
 

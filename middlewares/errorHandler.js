@@ -1,4 +1,4 @@
-const { ERROR_CODES, ERROR_MESSAGES } = require("./errors");
+const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
 
 const handleError = (err, res) => {
   console.error(err);
