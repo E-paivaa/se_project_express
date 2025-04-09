@@ -2,17 +2,20 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
-const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
+const { ERROR_MESSAGES } = require("../utils/errors");
+const NotFoundError = require('../utils/errors/not-found-error');
+const BadRequestError = require('../utils/errors/bad-request-error');
+const ServerError = require('../utils/errors/server-error');
+const ConflictError = require('../utils/errors/conflict-error');
+const UnauthorizedError = require("../utils/errors/unauthorized-error");
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res
-        .status(ERROR_CODES.DUPLICATE_ERROR)
-        .json({ message: "User with this email already exists." });
+      next(new ConflictError);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -38,21 +41,20 @@ const createUser = async (req, res) => {
     .json({ message: "User created successfully", data: userData, token });
 } catch (err) {
   if (err.name === "ValidationError") {
-    return res
-      .status(ERROR_CODES.BAD_REQUEST)
-      .json({ message: ERROR_MESSAGES.BAD_REQUEST });
+    next(new BadRequestError);
+  } else if (err.code === 11000) {
+    next(new ConflictError);
+  } else {
+    next(new ServerError);
   }
-  return res
-    .status(ERROR_CODES.SERVER_ERROR)
-    .json({ message: ERROR_MESSAGES.SERVER_ERROR });
-}
+};
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
 
   const { email, password } = req.body;
   if (!email || !password) { 
-    return res.status(ERROR_CODES.BAD_REQUEST).send({message:ERROR_MESSAGES.BAD_REQUEST});
+    next(new BadRequestError);
    }
 
   return User.findUserByCredentials(email, password)
@@ -62,16 +64,14 @@ const login = (req, res) => {
   })
   .catch((err) => {
     if (err.message === "Incorrect email or password") {
-      return res.status(ERROR_CODES.UNAUTHORIZED).send({ message: err.message });
+      next(new UnauthorizedError);
     }
-    return res
-      .status(ERROR_CODES.SERVER_ERROR)
-      .json({ message: ERROR_MESSAGES.SERVER_ERROR });
+    next(new ServerError);
   });
 };
 
 // Current User
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const userId  = req.user._id;
 
   User.findById(userId)
@@ -93,24 +93,19 @@ const getCurrentUser = (req, res) => {
       console.error(err);
 
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(ERROR_CODES.NOT_FOUND)
-          .send({ message: ERROR_MESSAGES.NOT_FOUND });
+        next(new NotFoundError);
       }
 
       if (err.name === "CastError") {
-        return res
-          .status(ERROR_CODES.BAD_REQUEST)
+        next(new BadRequestError)
           .send({ message: ERROR_MESSAGES.INVALID_ID});
       }
 
-      return res
-        .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+      next(new ServerError);
     });
   };
 
-    const updateCurrentUser = (req, res) => {
+    const updateCurrentUser = (req, res, next) => {
       const userId = req.user._id;
       const { avatar, name } = req.body;
     
@@ -121,17 +116,15 @@ const getCurrentUser = (req, res) => {
       )
         .then((updatedUser) => {
           if (!updatedUser) {
-            return res.status(ERROR_CODES.NOT_FOUND).send({ message: "User not found" });
+            next(new NotFoundError);
           }
           return res.status(200).send({ data: updatedUser });
         })
         .catch((error) => {
           if (error.name === "ValidationError") {
-            return res.status(ERROR_CODES.BAD_REQUEST).send({ message: "Validation error" });
+            next(new BadRequestError);
           }
-          return res
-            .status(ERROR_CODES.SERVER_ERROR)
-            .send({ message: "Error updating user, action not complete" });
+          next(new ServerError);
         });
     };
     

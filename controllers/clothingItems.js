@@ -1,20 +1,20 @@
 const ClothingItem = require("../models/clothingItem");
-const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
+const NotFoundError = require('../utils/errors/not-found-error');
+const BadRequestError = require('../utils/errors/bad-request-error');
+const ForbiddenError = require('../utils/errors/forbidden-error');
+const ServerError = require('../utils/errors/server-error');
 const handleError = require("../middlewares/errorHandler");
+const { ERROR_MESSAGES } = require("../utils/errors");
 
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
   const owner = req.user?._id;
   if (!owner) {
     console.error("Missing owner in request");
-    return res
-      .status(ERROR_CODES.BAD_REQUEST)
-      .send({ message: ERROR_MESSAGES.MISSING_OWNER });
+    next(new BadRequestError);
   }
   if (!name || !weather || !imageUrl) {
-    return res
-      .status(ERROR_CODES.BAD_REQUEST)
-      .send({ message: ERROR_MESSAGES.MISSING_FIELDS });
+    next(new BadRequestError);
   }
   return ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => {
@@ -30,20 +30,19 @@ const getItems = (req, res) => {
     .catch((err) => handleError(err, res));
 };
 
-const deleteItem = async (req, res) => {
+const deleteItem = async (req, res, next) => {
   const { itemId } = req.params;
   const userId = req.user._id;
 
   try {
     const item = await ClothingItem.findById(itemId).orFail(() => {
-      const error = new Error(ERROR_MESSAGES.NOT_FOUND);
+      const error = new Error(NotFoundError);
       error.name = "DocumentNotFoundError";
       throw error;
     });
 
     if (item.owner.toString() !== userId) {
-      return res
-        .status(ERROR_CODES.FORBIDDEN)
+      next(new ForbiddenError)
         .send({ message: ERROR_MESSAGES.CARD_REMOVAL });
     }
 
@@ -51,24 +50,18 @@ const deleteItem = async (req, res) => {
     return res.status(200).send({ message: "Item deleted successfully." });
   } catch (err) {
     if (err.name === "CastError") {
-      return res
-        .status(ERROR_CODES.BAD_REQUEST)
-        .send({ message: ERROR_MESSAGES.BAD_REQUEST });
+      next(new ForbiddenError);
     }
 
     if (err.name === "DocumentNotFoundError") {
-      return res
-        .status(ERROR_CODES.NOT_FOUND)
-        .send({ message: ERROR_MESSAGES.NOT_FOUND });
+      next(new NotFoundError);
     }
 
-    return res
-      .status(ERROR_CODES.SERVER_ERROR)
-      .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+    next(new ServerError);
   }
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   const { itemId } = req.params;
   ClothingItem.findByIdAndUpdate(
     itemId,
@@ -85,24 +78,19 @@ const likeItem = (req, res) => {
       console.error("Error liking item:", err);
 
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(ERROR_CODES.NOT_FOUND)
-          .send({ message: ERROR_MESSAGES.NOT_FOUND });
+        next(new NotFoundError);
       }
 
       if (err.name === "CastError") {
-        return res
-          .status(ERROR_CODES.BAD_REQUEST)
+        next(new BadRequestError)
           .send({ message: ERROR_MESSAGES.INVALID_ID });
       }
 
-      return res
-        .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+      next(new ServerError)
     });
 };
 
-const unlikeItem = (req, res) => {
+const unlikeItem = (req, res, next) => {
   const { itemId } = req.params;
   ClothingItem.findByIdAndUpdate(
     itemId,
@@ -118,20 +106,15 @@ const unlikeItem = (req, res) => {
     .catch((err) => {
       console.error("Error disliking item:", err);
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(ERROR_CODES.NOT_FOUND)
-          .send({ message: ERROR_MESSAGES.NOT_FOUND });
+        next(new NotFoundError);
       }
 
       if (err.name === "CastError") {
-        return res
-          .status(ERROR_CODES.BAD_REQUEST)
+       next(new BadRequestError)
           .send({ message: ERROR_MESSAGES.INVALID_ID });
       }
 
-      return res
-        .status(ERROR_CODES.SERVER_ERROR)
-        .send({ message: ERROR_MESSAGES.SERVER_ERROR });
+      next(new ServerError);
     });
 };
 
