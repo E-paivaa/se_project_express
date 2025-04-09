@@ -36,7 +36,7 @@ const deleteItem = (req, res, next) => {
 
   try {
     const item = ClothingItem.findById(itemId).orFail(() => {
-      const error = new Error(NotFoundError);
+      const error = new Error("DocumentNotFoundError");
       error.name = "DocumentNotFoundError";
       throw error;
     });
@@ -54,10 +54,10 @@ const deleteItem = (req, res, next) => {
 
     if (err.name === "DocumentNotFoundError") {
       next(new NotFoundError);
-    }
+    } else {
 
     next(new ServerError);
-  }
+  }}
 };
 
 const likeItem = (req, res, next) => {
