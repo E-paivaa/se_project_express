@@ -3,8 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require('celebrate');
-const { requestLogger, errorLogger } = require("../middlewares/logger");
-const handlerError = require("../middlewares/errorHandler");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
+const handlerError = require("./middlewares/errorHandler");
 
 const mainRouter = require("./routes/index");
 
