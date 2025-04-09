@@ -11,10 +11,10 @@ const createItem = (req, res, next) => {
   const owner = req.user?._id;
   if (!owner) {
     console.error("Missing owner in request");
-    next(new BadRequestError);
+    return next(new BadRequestError);
   }
   if (!name || !weather || !imageUrl) {
-    next(new BadRequestError);
+    return next(new BadRequestError);
   }
   return ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => {
@@ -42,21 +42,21 @@ const deleteItem = (req, res, next) => {
     });
 
     if (item.owner.toString() !== userId) {
-      next(new ForbiddenError({ message: ERROR_MESSAGES.CARD_REMOVAL }));
+      return next(new ForbiddenError({ message: ERROR_MESSAGES.CARD_REMOVAL }));
     }
 
     item.deleteOne();
     return res.status(200).send({ message: "Item deleted successfully." });
   } catch (err) {
     if (err.name === "CastError") {
-      next(new ForbiddenError);
+      return next(new ForbiddenError);
     }
 
     if (err.name === "DocumentNotFoundError") {
-      next(new NotFoundError);
+      return next(new NotFoundError);
     } else {
 
-    next(new ServerError);
+    return next(new ServerError);
   }}
 };
 
@@ -77,14 +77,14 @@ const likeItem = (req, res, next) => {
       console.error("Error liking item:", err);
 
       if (err.name === "DocumentNotFoundError") {
-        next(new NotFoundError);
+        return next(new NotFoundError);
       }
 
       if (err.name === "CastError") {
-        next(new BadRequestError({ message: ERROR_MESSAGES.INVALID_ID }));
+        return next(new BadRequestError({ message: ERROR_MESSAGES.INVALID_ID }));
       }
 
-      next(new ServerError)
+      return next(new ServerError)
     });
 };
 
@@ -104,14 +104,14 @@ const unlikeItem = (req, res, next) => {
     .catch((err) => {
       console.error("Error disliking item:", err);
       if (err.name === "DocumentNotFoundError") {
-        next(new NotFoundError);
+        return next(new NotFoundError);
       }
 
       if (err.name === "CastError") {
-       next(new BadRequestError({ message: ERROR_MESSAGES.INVALID_ID }));
+       return next(new BadRequestError({ message: ERROR_MESSAGES.INVALID_ID }));
       }
 
-      next(new ServerError);
+      return next(new ServerError);
     });
 };
 

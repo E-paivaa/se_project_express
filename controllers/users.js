@@ -15,7 +15,7 @@ const createUser = (req, res, next) => {
   try {
     const existingUser = User.findOne({ email });
     if (existingUser) {
-      next(new ConflictError);
+      return next(new ConflictError);
     }
 
     const hashedPassword = bcrypt.hash(password, 10);
@@ -41,11 +41,11 @@ const createUser = (req, res, next) => {
     .json({ message: "User created successfully", data: userData, token });
 } catch (err) {
   if (err.name === "ValidationError") {
-    next(new BadRequestError);
+    return next(new BadRequestError);
   } else if (err.code === 11000) {
-    next(new ConflictError);
+    return next(new ConflictError);
   } else {
-    next(new ServerError);
+    return next(new ServerError);
   }
 };
 };
@@ -54,7 +54,7 @@ const login = (req, res, next) => {
 
   const { email, password } = req.body;
   if (!email || !password) { 
-    next(new BadRequestError);
+    return next(new BadRequestError);
    }
 
   return User.findUserByCredentials(email, password)
@@ -64,9 +64,9 @@ const login = (req, res, next) => {
   })
   .catch((err) => {
     if (err.message === "Incorrect email or password") {
-      next(new UnauthorizedError);
+      return next(new UnauthorizedError);
     }
-    next(new ServerError);
+    return next(new ServerError);
   });
 };
 
@@ -93,14 +93,14 @@ const getCurrentUser = (req, res, next) => {
       console.error(err);
 
       if (err.name === "DocumentNotFoundError") {
-        next(new NotFoundError);
+        return next(new NotFoundError);
       }
 
       if (err.name === "CastError") {
-        next(new BadRequestError({ message: ERROR_MESSAGES.INVALID_ID }));
+        return next(new BadRequestError({ message: ERROR_MESSAGES.INVALID_ID }));
       }
 
-      next(new ServerError);
+      return next(new ServerError);
     });
   };
 
@@ -115,15 +115,15 @@ const getCurrentUser = (req, res, next) => {
       )
         .then((updatedUser) => {
           if (!updatedUser) {
-            next(new NotFoundError);
+            return next(new NotFoundError);
           }
           return res.status(200).send({ data: updatedUser });
         })
         .catch((error) => {
           if (error.name === "ValidationError") {
-            next(new BadRequestError);
+            return next(new BadRequestError);
           }
-          next(new ServerError);
+          return next(new ServerError);
         });
     };
     
