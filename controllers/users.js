@@ -42,11 +42,10 @@ const createUser = (req, res, next) => {
 } catch (err) {
   if (err.name === "ValidationError") {
     return next(new BadRequestError);
-  } else if (err.code === 11000) {
+  } if (err.code === 11000) {
     return next(new ConflictError);
-  } else {
-    return next(new ServerError);
   }
+    return next(new ServerError);
 };
 };
 

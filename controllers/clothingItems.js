@@ -54,10 +54,10 @@ const deleteItem = (req, res, next) => {
 
     if (err.name === "DocumentNotFoundError") {
       return next(new NotFoundError);
-    } else {
+    }
 
     return next(new ServerError);
-  }}
+  }
 };
 
 const likeItem = (req, res, next) => {
