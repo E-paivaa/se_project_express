@@ -42,8 +42,7 @@ const deleteItem = (req, res, next) => {
     });
 
     if (item.owner.toString() !== userId) {
-      next(new ForbiddenError)
-        .send({ message: ERROR_MESSAGES.CARD_REMOVAL });
+      next(new ForbiddenError({ message: ERROR_MESSAGES.CARD_REMOVAL }));
     }
 
     item.deleteOne();
@@ -82,8 +81,7 @@ const likeItem = (req, res, next) => {
       }
 
       if (err.name === "CastError") {
-        next(new BadRequestError)
-          .send({ message: ERROR_MESSAGES.INVALID_ID });
+        next(new BadRequestError({ message: ERROR_MESSAGES.INVALID_ID }));
       }
 
       next(new ServerError)
@@ -110,8 +108,7 @@ const unlikeItem = (req, res, next) => {
       }
 
       if (err.name === "CastError") {
-       next(new BadRequestError)
-          .send({ message: ERROR_MESSAGES.INVALID_ID });
+       next(new BadRequestError({ message: ERROR_MESSAGES.INVALID_ID }));
       }
 
       next(new ServerError);

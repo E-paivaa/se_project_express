@@ -97,8 +97,7 @@ const getCurrentUser = (req, res, next) => {
       }
 
       if (err.name === "CastError") {
-        next(new BadRequestError)
-          .send({ message: ERROR_MESSAGES.INVALID_ID});
+        next(new BadRequestError({ message: ERROR_MESSAGES.INVALID_ID }));
       }
 
       next(new ServerError);
