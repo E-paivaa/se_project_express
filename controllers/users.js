@@ -9,18 +9,18 @@ const ServerError = require('../utils/errors/server-error');
 const ConflictError = require('../utils/errors/conflict-error');
 const UnauthorizedError = require("../utils/errors/unauthorized-error");
 
-const createUser = async (req, res, next) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ email });
+    const existingUser = User.findOne({ email });
     if (existingUser) {
       next(new ConflictError);
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = bcrypt.hash(password, 10);
 
-    const user = await User.create({
+    const user = User.create({
       name,
       avatar,
       email,

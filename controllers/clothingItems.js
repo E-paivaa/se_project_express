@@ -30,12 +30,12 @@ const getItems = (req, res) => {
     .catch((err) => handleError(err, res));
 };
 
-const deleteItem = async (req, res, next) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
   const userId = req.user._id;
 
   try {
-    const item = await ClothingItem.findById(itemId).orFail(() => {
+    const item = ClothingItem.findById(itemId).orFail(() => {
       const error = new Error(NotFoundError);
       error.name = "DocumentNotFoundError";
       throw error;
@@ -46,7 +46,7 @@ const deleteItem = async (req, res, next) => {
         .send({ message: ERROR_MESSAGES.CARD_REMOVAL });
     }
 
-    await item.deleteOne();
+    item.deleteOne();
     return res.status(200).send({ message: "Item deleted successfully." });
   } catch (err) {
     if (err.name === "CastError") {
