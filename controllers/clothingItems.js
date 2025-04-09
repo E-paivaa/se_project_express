@@ -1,9 +1,9 @@
 const ClothingItem = require("../models/clothingItem");
-const NotFoundError = require('../utils/errors/not-found-error');
-const BadRequestError = require('../utils/errors/bad-request-error');
-const ForbiddenError = require('../utils/errors/forbidden-error');
-const ServerError = require('../utils/errors/server-error');
-const handleError = require("../middlewares/errorHandler");
+const NotFoundError = require("../utils/errors/not-found-error");
+const BadRequestError = require("../utils/errors/bad-request-error");
+const ForbiddenError = require("../utils/errors/forbidden-error");
+const ServerError = require("../utils/errors/server-error");
+const handleError = require("../middlewares/errorHandler").default;
 const { ERROR_MESSAGES } = require("../utils/errors");
 
 const createItem = (req, res, next) => {
@@ -11,10 +11,10 @@ const createItem = (req, res, next) => {
   const owner = req.user?._id;
   if (!owner) {
     console.error("Missing owner in request");
-    return next(new BadRequestError);
+    return next(new BadRequestError());
   }
   if (!name || !weather || !imageUrl) {
-    return next(new BadRequestError);
+    return next(new BadRequestError());
   }
   return ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => {
@@ -30,33 +30,33 @@ const getItems = (req, res) => {
     .catch((err) => handleError(err, res));
 };
 
-const deleteItem = (req, res, next) => {
+const deleteItem = async (req, res, next) => {
   const { itemId } = req.params;
   const userId = req.user._id;
 
   try {
-    const item = ClothingItem.findById(itemId).orFail(() => {
+    const item = await ClothingItem.findById(itemId).orFail(() => {
       const error = new Error("DocumentNotFoundError");
       error.name = "DocumentNotFoundError";
       throw error;
     });
 
     if (item.owner.toString() !== userId) {
-      return next(new ForbiddenError({ message: ERROR_MESSAGES.CARD_REMOVAL }));
+      return next(new ForbiddenError(ERROR_MESSAGES.CARD_REMOVAL));
     }
 
-    item.deleteOne();
+    await item.deleteOne();
     return res.status(200).send({ message: "Item deleted successfully." });
   } catch (err) {
     if (err.name === "CastError") {
-      return next(new ForbiddenError);
+      return next(new BadRequestError);
     }
 
     if (err.name === "DocumentNotFoundError") {
-      return next(new NotFoundError);
+      return next(new NotFoundError());
     }
 
-    return next(new ServerError);
+    return next(new ServerError());
   }
 };
 
@@ -77,14 +77,14 @@ const likeItem = (req, res, next) => {
       console.error("Error liking item:", err);
 
       if (err.name === "DocumentNotFoundError") {
-        return next(new NotFoundError);
+        return next(new NotFoundError());
       }
 
       if (err.name === "CastError") {
-        return next(new BadRequestError({ message: ERROR_MESSAGES.INVALID_ID }));
+        return next(new BadRequestError(ERROR_MESSAGES.INVALID_ID));
       }
 
-      return next(new ServerError)
+      return next(new ServerError());
     });
 };
 
@@ -104,14 +104,14 @@ const unlikeItem = (req, res, next) => {
     .catch((err) => {
       console.error("Error disliking item:", err);
       if (err.name === "DocumentNotFoundError") {
-        return next(new NotFoundError);
+        return next(new NotFoundError());
       }
 
       if (err.name === "CastError") {
-       return next(new BadRequestError({ message: ERROR_MESSAGES.INVALID_ID }));
+        return next(new BadRequestError(ERROR_MESSAGES.INVALID_ID));
       }
 
-      return next(new ServerError);
+      return next(new ServerError());
     });
 };
 

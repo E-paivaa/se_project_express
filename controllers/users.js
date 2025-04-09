@@ -9,18 +9,18 @@ const ServerError = require('../utils/errors/server-error');
 const ConflictError = require('../utils/errors/conflict-error');
 const UnauthorizedError = require("../utils/errors/unauthorized-error");
 
-const createUser = (req, res, next) => {
+const createUser = async (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   try {
-    const existingUser = User.findOne({ email });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return next(new ConflictError);
     }
 
-    const hashedPassword = bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = User.create({
+    const user = await User.create({
       name,
       avatar,
       email,
@@ -96,7 +96,7 @@ const getCurrentUser = (req, res, next) => {
       }
 
       if (err.name === "CastError") {
-        return next(new BadRequestError({ message: ERROR_MESSAGES.INVALID_ID }));
+        return next(new BadRequestError(ERROR_MESSAGES.INVALID_ID ));
       }
 
       return next(new ServerError);
