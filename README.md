@@ -35,7 +35,7 @@
 
 # DOMAIN NAME:
 
-    - https://api.gcp-demo.twilightparadox.com
+    - https://api.gcp-demo.twilightparadox.com (baseurl)
     - https://gcp-demo.twilightparadox.com (homepage)
     - https://www.gcp-demo.twilightparadox.com
 
