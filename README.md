@@ -3,12 +3,12 @@
     This project illustrates the use of weather and clothing functionality that portrays the deployment of clothing based of the weather within the location. Along with the add ons of sign in, sign up, add clothing, and profile function.
 
 
-# Front End : Express.js Framework
+# Front End : Project Stature
 
     The front end project is used to simplify 
     functionality of our APIs and WEB APPLICATIONS.
 
-# Back End : Project Stature
+# Back End : Express.js Framework 
 
     The back-end project is focused on creating a server for the WTWR application. You’ll gain a deeper understanding of how to work with databases, set up security and testing, and deploy web applications on a remote machine. The eventual goal is to create a server with an API and user authorization.
 
